@@ -34,6 +34,7 @@ public class CommentService {
 
     public ResponseEntity<?> addComment(HttpServletRequest request, CommentEntity commentEntity) throws JsonProcessingException {
 
+        //댓글 생성 시 적합한 회원인지 검사
         String passportUsername = passportUtil.getUsername(request.getHeader("passport"));
 
         if(!passportUsername.equals(commentEntity.getWriter())) {
@@ -86,24 +87,7 @@ public class CommentService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> deleteAllComments(HttpServletRequest request, String username, Long boardId) throws JsonProcessingException {
-
-        String passportUsername = passportUtil.getUsername(request.getHeader("passport"));
-
-        if(!passportUsername.equals(username)) {
-            return new ResponseEntity<>("Not user matched", HttpStatus.UNAUTHORIZED);
-        }
-
-        if(boardId != null) {
-            commentRepository.deleteAllByBoardId(boardId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        else {
-            commentRepository.deleteAllByWriter(username);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-    }
-
+    //이것도 카프카를 통해서 해야하는가?
     private boolean checkUserAndBoard (HttpServletRequest request, Long boardId) throws JsonProcessingException {
 
         Map<String, String> userMap;

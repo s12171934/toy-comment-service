@@ -14,6 +14,7 @@ public class KafkaConsumerService {
         this.commentRepository = commentRepository;
     }
 
+    //유저 삭제를 listen, comment 삭제
     @KafkaListener(topics = "user-delete", groupId = "user-group")
     public void listenUserDelete(String message) {
 
@@ -21,6 +22,7 @@ public class KafkaConsumerService {
         System.out.println("Message received by Kafka: " + message);
     }
 
+    //게시물 삭제를 listen, comment 삭제
     @KafkaListener(topics = "board-delete", groupId = "board-group")
     public void listenBoardDelete(String message) {
 

@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/comment")
@@ -44,18 +43,4 @@ public class CommentController {
 
         return commentService.deleteComment(request, commentId);
     }
-
-    @DeleteMapping("/allByBoard/{boardId}/{boardWriter}")
-    public ResponseEntity<?> deleteAllByBoard(HttpServletRequest request, @PathVariable long boardId, @PathVariable String boardWriter) throws JsonProcessingException {
-
-        return commentService.deleteAllComments(request, boardWriter, boardId);
-    }
-
-    @DeleteMapping("/allByUser/{username}")
-    public ResponseEntity<?> deleteAllByUser(HttpServletRequest request, @PathVariable String username) throws JsonProcessingException {
-
-        return commentService.deleteAllComments(request, username, null);
-    }
-
-
 }
