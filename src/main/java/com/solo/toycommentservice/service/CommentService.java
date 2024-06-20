@@ -3,6 +3,7 @@ package com.solo.toycommentservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solo.toycommentservice.entity.CommentEntity;
+import com.solo.toycommentservice.kafka.KafkaProducerService;
 import com.solo.toycommentservice.repository.CommentRepository;
 import com.solo.toycommentservice.util.PassportUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,12 +20,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PassportUtil passportUtil;
     private final WebClient.Builder webClientBuilder;
+    private final KafkaProducerService kafkaProducerService;
 
-    public CommentService(CommentRepository commentRepository, PassportUtil passportUtil, WebClient.Builder webClientBuilder) {
+    public CommentService(CommentRepository commentRepository,
+                          PassportUtil passportUtil,
+                          WebClient.Builder webClientBuilder,
+                          KafkaProducerService kafkaProducerService) {
 
         this.commentRepository = commentRepository;
-        this.passportUtil = new PassportUtil();
+        this.passportUtil = passportUtil;
         this.webClientBuilder = webClientBuilder;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public List<CommentEntity> getAllComments(long boardId) {
@@ -46,6 +52,8 @@ public class CommentService {
         if(!checkUserAndBoard(request, commentEntity.getBoardId())) {
             return new ResponseEntity<>("Not authorized", HttpStatus.UNAUTHORIZED);
         }
+
+        kafkaProducerService.sendMessage("comment-add-events",passportUsername + "::" + commentEntity.getBoardId());
 
 
         commentRepository.save(commentEntity);
